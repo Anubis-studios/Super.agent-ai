@@ -11,6 +11,6 @@ fun main() {
 }
 """
   val file=File(dir,"Main.kt"); file.writeText(content); val path="/outputs/code/$id/${file.name}"
-  return listOf(CodeArtefact(file.name,file.absolutePath,file.name,file.absolutePath,base+path,content))
+  return listOf(CodeArtefact(file.name,file.absolutePath,file.name,file.absolutePath,base+path,content,"Kotlin starter source file."))
  }
 }

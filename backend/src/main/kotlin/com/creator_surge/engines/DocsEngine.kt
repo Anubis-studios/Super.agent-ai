@@ -15,6 +15,6 @@ This is a starter brief generated from your prompt. Review and expand the requir
 - Review security and licensing before distributing output.
 """
   file.writeText(content); val path="/outputs/docs/$id/${file.name}"
-  return listOf(DocsArtefact(file.name,file.absolutePath,file.name,file.absolutePath,base+path,content))
+  return listOf(DocsArtefact(file.name,file.absolutePath,file.name,file.absolutePath,base+path,content,"Markdown project brief and next steps."))
  }
 }
