@@ -5,7 +5,16 @@ import kotlinx.serialization.Serializable
 import java.io.File
 
 @Serializable data class CreationRequest(val prompt: String, val mediums: List<String> = listOf("image", "video", "game", "code", "docs"))
-@Serializable data class Overview(val title: String, val summary: String, val requestedMediums: List<String>)
+@Serializable data class Overview(
+    val title: String,
+    val summary: String,
+    val requestedMediums: List<String>,
+    // Compatibility fields required by already-installed Android builds.
+    val prompt: String,
+    val status: String,
+    val totalArtefacts: Int,
+    val timestamp: Long
+)
 @Serializable data class ImageArtefact(val name: String, val path: String, val url: String, val mimeType: String)
 @Serializable data class VideoArtefact(val name: String, val path: String, val url: String, val mimeType: String, val note: String)
 @Serializable data class GameArtefact(val name: String, val path: String, val url: String, val mimeType: String)
@@ -22,6 +31,16 @@ class CreationRouter(private val root: File, private val baseUrl: String) {
         val games = if ("game" in selected) GameEngine(root, baseUrl).generate(request.prompt, id) else emptyList()
         val code = if ("code" in selected) CodeEngine(root, baseUrl).generate(request.prompt, id) else emptyList()
         val docs = if ("docs" in selected) DocsEngine(root, baseUrl).generate(request.prompt, id) else emptyList()
-        return CreationResult(Overview("Creator Surge result", "Generated starter artefacts for: ${request.prompt.take(240)}", selected.toList().sorted()), images, videos, games, code, docs)
+        val total = images.size + videos.size + games.size + code.size + docs.size
+        val overview = Overview(
+            title = "Creator Surge result",
+            summary = "Generated starter artefacts for: ${request.prompt.take(240)}",
+            requestedMediums = selected.toList().sorted(),
+            prompt = request.prompt,
+            status = "success",
+            totalArtefacts = total,
+            timestamp = System.currentTimeMillis()
+        )
+        return CreationResult(overview, images, videos, games, code, docs)
     }
 }
