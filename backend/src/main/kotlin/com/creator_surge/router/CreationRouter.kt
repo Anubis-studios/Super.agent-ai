@@ -9,17 +9,16 @@ import java.io.File
     val title: String,
     val summary: String,
     val requestedMediums: List<String>,
-    // Compatibility fields required by already-installed Android builds.
     val prompt: String,
     val status: String,
     val totalArtefacts: Int,
     val timestamp: Long
 )
-@Serializable data class ImageArtefact(val name: String, val path: String, val url: String, val mimeType: String)
-@Serializable data class VideoArtefact(val name: String, val path: String, val url: String, val mimeType: String, val note: String)
-@Serializable data class GameArtefact(val name: String, val path: String, val url: String, val mimeType: String)
-@Serializable data class CodeArtefact(val name: String, val path: String, val url: String, val content: String)
-@Serializable data class DocsArtefact(val name: String, val path: String, val url: String, val content: String)
+@Serializable data class ImageArtefact(val title: String, val filePath: String, val name: String, val path: String, val url: String, val mimeType: String)
+@Serializable data class VideoArtefact(val title: String, val filePath: String, val name: String, val path: String, val url: String, val mimeType: String, val note: String)
+@Serializable data class GameArtefact(val title: String, val filePath: String, val name: String, val path: String, val url: String, val mimeType: String)
+@Serializable data class CodeArtefact(val title: String, val filePath: String, val name: String, val path: String, val url: String, val content: String)
+@Serializable data class DocsArtefact(val title: String, val filePath: String, val name: String, val path: String, val url: String, val content: String)
 @Serializable data class CreationResult(val overview: Overview, val images: List<ImageArtefact>, val videos: List<VideoArtefact>, val game: List<GameArtefact>, val code: List<CodeArtefact>, val docs: List<DocsArtefact>)
 
 class CreationRouter(private val root: File, private val baseUrl: String) {
@@ -32,15 +31,7 @@ class CreationRouter(private val root: File, private val baseUrl: String) {
         val code = if ("code" in selected) CodeEngine(root, baseUrl).generate(request.prompt, id) else emptyList()
         val docs = if ("docs" in selected) DocsEngine(root, baseUrl).generate(request.prompt, id) else emptyList()
         val total = images.size + videos.size + games.size + code.size + docs.size
-        val overview = Overview(
-            title = "Creator Surge result",
-            summary = "Generated starter artefacts for: ${request.prompt.take(240)}",
-            requestedMediums = selected.toList().sorted(),
-            prompt = request.prompt,
-            status = "success",
-            totalArtefacts = total,
-            timestamp = System.currentTimeMillis()
-        )
+        val overview = Overview("Creator Surge result", "Generated starter artefacts for: ${request.prompt.take(240)}", selected.toList().sorted(), request.prompt, "success", total, System.currentTimeMillis())
         return CreationResult(overview, images, videos, games, code, docs)
     }
 }
